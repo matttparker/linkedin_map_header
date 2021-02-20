@@ -1,0 +1,175 @@
+NOTE: This code was heavily borrowed (HEAVILY BORROWED) from http://joshuamccrain.com/tutorials/maps/streets_tutorial.html.
+
+I encountered this tutorial in my early stages in R, while looking for a package for creating
+interactive maps for a class project at Nashville Software School (Leaflet was obviously the correct
+solution, but like I said - it was very early stages in R).
+
+While I didn't end up using this product in my final project, I always wanted an excuse to use it
+because I love the clean, beautiful lines of the map. 
+
+If you want to make a map for your own city, it should be a very simple process to replicate. 
+For a more detailed tutorial, definitely check out Joshua's website. And if you want to see my
+final project, a study of growing traffic in Tennessee, visit the link below!
+
+https://matttparker.shinyapps.io/TnTraffic/
+
+
+```{r}
+library(tidyverse)
+library(osmdata) # package for working with streets
+library(showtext) # for custom fonts
+library(ggmap)
+library(rvest)
+```
+
+```{r}
+# Find coordinate borders of your city
+getbb("Nashville Tennessee")
+```
+
+```{r}
+# Open streets has many categories of roads, so we'll start by combining them into just a few levels.
+# These levels will be displayed by different thickness on the final product.
+# Start with the largest roads. Use osmdata_sf() to convert them to a form which ggmap can read.
+big_streets <- getbb("Nashville Tennessee")%>%
+  opq()%>%
+  add_osm_feature(key = "highway", 
+                  value = c("motorway", "primary", "motorway_link", "primary_link")) %>%
+  osmdata_sf()
+```
+
+```{r}
+# Continue the same process, with two more levels of streets.
+med_streets <- getbb("Nashville Tennessee")%>%
+  opq()%>%
+  add_osm_feature(key = "highway", 
+                  value = c("secondary", "tertiary", "secondary_link", "tertiary_link")) %>%
+  osmdata_sf()
+
+
+small_streets <- getbb("Nashville Tennessee")%>%
+  opq()%>%
+  add_osm_feature(key = "highway", 
+                  value = c("residential", "living_street",
+                            "unclassified",
+                            "service", "footway"
+                  )) %>%
+  osmdata_sf()
+```
+
+```{r}
+# Add other distinctive features to the map, such as rivers and railways.
+river <- getbb("Nashville Tennessee")%>%
+  opq()%>%
+  add_osm_feature(key = "waterway", value = "river") %>%
+  osmdata_sf()
+```
+
+```{r}
+railway <- getbb("Nashville Tennessee")%>%
+  opq()%>%
+  add_osm_feature(key = "railway", value="rail") %>%
+  osmdata_sf()
+```
+
+```{r}
+# This is just a preview - what does one level of roads look like, with no additional formatting?
+ggplot() +
+  geom_sf(data = big_streets$osm_lines,
+          inherit.aes = FALSE,
+          color = "black")
+```
+
+```{r}
+# Add it all together to create a full map of the city!
+# Note that you can use colors and line thickness/weight to distinguish the levels we already created.
+ggplot() +
+  geom_sf(data = river$osm_lines,
+          inherit.aes = FALSE,
+          color = "steelblue",
+          size = .8,
+          alpha = .3) +
+  geom_sf(data = railway$osm_lines,
+          inherit.aes = FALSE,
+          color = "black",
+          size = .2,
+          linetype="dotdash",
+          alpha = .5) +
+  geom_sf(data = med_streets$osm_lines,
+          inherit.aes = FALSE,
+          color = "black",
+          size = .3,
+          alpha = .5) +
+  geom_sf(data = small_streets$osm_lines,
+          inherit.aes = FALSE,
+          color = "#666666",
+          size = .2,
+          alpha = .3) +
+  geom_sf(data = big_streets$osm_lines,
+          inherit.aes = FALSE,
+          color = "black",
+          size = .5,
+          alpha = .6) +
+  
+  coord_sf(xlim = c(-86.95, -86.62), # Set the borders of your map (influenced the getbb() from above)
+           ylim = c(36.03, 36.30),
+           expand = FALSE)  +
+  
+  theme_void() + # get rid of background color, grid lines, etc.
+  
+  theme(plot.title = element_text(size = 20, face="bold", hjust=.5), # Add a title to your map
+        plot.subtitle = element_text(size = 8, hjust=.5, margin=margin(2, 0, 5, 0))) +
+  labs(title = "NASHVILLE", subtitle = "36.1627°N / 86.7816°W")
+```
+
+```{r}
+# Update your map borders to fit within a LinkedIn Header 
+# (you'll have to play around with this until you're happy)
+ggplot() +
+  geom_sf(data = river$osm_lines,
+          inherit.aes = FALSE,
+          color = "steelblue",
+          size = .8,
+          alpha = .3) +
+  geom_sf(data = railway$osm_lines,
+          inherit.aes = FALSE,
+          color = "black",
+          size = .2,
+          linetype="dotdash",
+          alpha = .5) +
+  geom_sf(data = med_streets$osm_lines,
+          inherit.aes = FALSE,
+          color = "black",
+          size = .3,
+          alpha = .5) +
+  geom_sf(data = small_streets$osm_lines,
+          inherit.aes = FALSE,
+          color = "#666666",
+          size = .2,
+          alpha = .3) +
+  geom_sf(data = big_streets$osm_lines,
+          inherit.aes = FALSE,
+          color = "black",
+          size = .5,
+          alpha = .6) +
+  coord_sf(xlim = c(-86.95, -86.62), 
+           ylim = c(36.142, 36.195),
+           expand = FALSE)  +
+  theme_void() + 
+  theme(plot.title = element_text(size = 12, face="bold", hjust=.5),
+        plot.subtitle = element_text(size = 6, hjust=.5, margin=margin(2, 0, 5, 0))) +
+  labs(title = "NASHVILLE", subtitle = "36.1627°N / 86.7816°W")
+
+ggsave("linkedin_map_header.png") # Save image as png
+```
+
+
+That concludes this notebook! Again, check out the original tutorial for more details,
+as well as information on how to add some fun details to your map (like highlighting specific
+roads or adding a layer of markers for something of interest to you). If you end up using this,
+I'd be thrilled if you sent me a message for to check out your handiwork!
+
+-Matt
+
+
+
