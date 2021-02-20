@@ -1,5 +1,5 @@
 # LinkedIn Map Header
-## Quick R code to create a custom LinkedIn header (or full size image) using open street maps in R.
+### Quick R code to create a custom LinkedIn header (or full size image) using open street maps in R.
 
 NOTE: This code was heavily borrowed (HEAVILY BORROWED) from http://joshuamccrain.com/tutorials/maps/streets_tutorial.html.
 
@@ -11,6 +11,6 @@ If you want to make a map for your own city, it should be a very simple process 
 
 If you end up using this, I'd be thrilled if you sent me a message for to check out your handiwork!
 
-And if you want to see the final project where this didn't make the cut, a study of growing traffic in Tennessee, visit the link below!
+And if you want to see the final project on Traffic Growth in Tennessee, where this didn't make the cut, visit the link below!
 
 https://matttparker.shinyapps.io/TnTraffic/
