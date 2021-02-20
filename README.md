@@ -4,6 +4,7 @@
 NOTE: This code was heavily borrowed (HEAVILY BORROWED) from http://joshuamccrain.com/tutorials/maps/streets_tutorial.html.
 
 ![alt text](https://github.com/matttparker/linkedin_map_header//blob/main/linkedin_map_header.png?raw=true)
+Format: ![Alt Text](url)
 
 I encountered this tutorial in my early stages in R, while looking for a package for creating interactive maps for a class project at Nashville Software School (Leaflet was obviously the correct solution, but like I said - it was very early stages in R). While I didn't end up using this product in my final project, I always wanted an excuse to use it because I love the clean, beautiful lines of the map. 
 
